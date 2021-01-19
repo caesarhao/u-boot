@@ -37,16 +37,20 @@
 
 				display-timings {
 					timing@0 {
-						/* Seaboard has 1366x768 */
-						clock-frequency = <70600000>;
-						hactive = <1366>;
-						vactive = <768>;
-						hback-porch = <58>;
-						hfront-porch = <58>;
-						hsync-len = <58>;
-						vback-porch = <4>;
-						vfront-porch = <4>;
-						vsync-len = <4>;
+						/* PHJ00 has 10.1 inch, 1280x800, 16:10 */
+						/* LG LP101WX1 */
+						/* datasheet - https://datasheetspdf.com/pdf-file/788219/LG/LP101WX1-SLN2/1 */
+						/* taken from thinktabletopensource/kernel/arch/arm/mach-tegra/board-ventana-panel.c */
+						/* LG_panel_modes */
+						clock-frequency = <71500000>; // 72072000
+						hactive = <1280>;
+						vactive = <800>;
+						hback-porch = <72>;
+						hfront-porch = <48>;
+						hsync-len = <32>;
+						vback-porch = <22>;
+						vfront-porch = <3>;
+						vsync-len = <7>;
 						hsync-active = <1>;
 					};
 				};
@@ -118,6 +122,10 @@
 			dap4 {
 				nvidia,pins = "dap4";
 				nvidia,function = "dap4";
+			};
+			ddc {
+				nvidia,pins = "ddc";
+				nvidia,function = "rsvd2";
 			};
 			dta {
 				nvidia,pins = "dta", "dtb", "dtc", "dtd", "dte";
