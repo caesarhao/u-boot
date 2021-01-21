@@ -1,0 +1,3 @@
+# don't ignore bin files in this folder
+!*.bin
+
