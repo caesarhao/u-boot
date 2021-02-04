@@ -27,39 +27,17 @@
 	};
 
 	host1x@50000000 {
-		status = "okay";
 		dc@54200000 {
-			status = "okay";
 			rgb {
 				status = "okay";
 
-				nvidia,panel = <&panel>;
-
-				display-timings {
-					timing@0 {
-						/* PHJ00 has 10.1 inch, 1280x800, 16:10 */
-						/* LG LP101WX1 */
-						/* datasheet - https://datasheetspdf.com/pdf-file/788219/LG/LP101WX1-SLN2/1 */
-						/* taken from thinktabletopensource/kernel/arch/arm/mach-tegra/board-ventana-panel.c */
-						/* LG_panel_modes */
-						clock-frequency = <71500000>; // 72072000
-						hactive = <1280>;
-						vactive = <800>;
-						hback-porch = <72>;
-						hfront-porch = <48>;
-						hsync-len = <32>;
-						vback-porch = <22>;
-						vfront-porch = <3>;
-						vsync-len = <7>;
-						hsync-active = <1>;
-					};
-				};
+				nvidia,panel = <&panel>;	
 			};
 		};
 
 		hdmi@54280000 {
 			status = "okay";
-
+			// hdmi-supply = <&hdmi_vdd_reg>; 
 			vdd-supply = <&hdmi_vdd_reg>;
 			pll-supply = <&hdmi_pll_reg>;
 
@@ -458,92 +436,95 @@
 			regulators {
 				sys_reg: sys {
 					regulator-name = "vdd_sys";
+					regulator-boot-on;
 					regulator-always-on;
 				};
 
-				sm0 {
+				sm0_reg: sm0 {
 					regulator-name = "vdd_sm0,vdd_core";
-					regulator-min-microvolt = <1200000>;
-					regulator-max-microvolt = <1200000>;
+					regulator-min-microvolt = <725000>;
+					regulator-max-microvolt = <1500000>;
 					regulator-always-on;
 				};
 
-				sm1 {
+				sm1_reg: sm1 {
 					regulator-name = "vdd_sm1,vdd_cpu";
-					regulator-min-microvolt = <1000000>;
-					regulator-max-microvolt = <1000000>;
+					regulator-min-microvolt = <725000>;
+					regulator-max-microvolt = <1500000>;
 					regulator-always-on;
 				};
 
 				sm2_reg: sm2 {
 					regulator-name = "vdd_sm2,vin_ldo*";
-					regulator-min-microvolt = <3700000>;
-					regulator-max-microvolt = <3700000>;
+					regulator-min-microvolt = <3000000>;
+					regulator-max-microvolt = <4550000>;
 					regulator-always-on;
 				};
 
-				/* LDO0 is not connected to anything */
+				ldo0_reg: ldo0 {
+					regulator-name = "vdd_ldo0,p_cam_avdd";
+					regulator-min-microvolt = <1250000>;
+					regulator-max-microvolt = <3300000>;
+				};
 
-				ldo1 {
+				ldo1_reg: ldo1 {
 					regulator-name = "vdd_ldo1,avdd_pll*";
-					regulator-min-microvolt = <1100000>;
-					regulator-max-microvolt = <1100000>;
+					regulator-min-microvolt = <725000>;
+					regulator-max-microvolt = <1500000>;
 					regulator-always-on;
 				};
 
-				ldo2 {
-					regulator-name = "vdd_ldo2,vdd_rtc";
-					regulator-min-microvolt = <1200000>;
-					regulator-max-microvolt = <1200000>;
+				ldo2_reg: ldo2 {
+					regulator-name = "vdd_ldo2,vdd_rtc,vdd_aon";
+					regulator-min-microvolt = <725000>;
+					regulator-max-microvolt = <1500000>;
 				};
 
-				ldo3 {
-					regulator-name = "vdd_ldo3,avdd_usb*";
-					regulator-min-microvolt = <3300000>;
+				ldo3_reg: ldo3 {
+					regulator-name = "vdd_ldo3,avdd_usb,avdd_usb_pll,avdd_usb*";
+					regulator-min-microvolt = <1250000>;
+					regulator-max-microvolt = <3300000>;
+				};
+
+				ldo4_reg: ldo4 {
+					regulator-name = "vdd_ldo4,avdd_osc,vddio_sys";
+					regulator-min-microvolt = <1700000>;
+					regulator-max-microvolt = <2475000>;
+					regulator-always-on;
+				};
+
+				ldo5_reg: ldo5 {
+					regulator-name = "vdd_ldo5,vcore_mmc,vmmc";
+					regulator-min-microvolt = <1250000>;
 					regulator-max-microvolt = <3300000>;
 					regulator-always-on;
 				};
 
-				ldo4 {
-					regulator-name = "vdd_ldo4,avdd_osc,vddio_sys";
-					regulator-min-microvolt = <1800000>;
-					regulator-max-microvolt = <1800000>;
-					regulator-always-on;
-				};
-
-				ldo5 {
-					regulator-name = "vdd_ldo5,vcore_mmc";
-					regulator-min-microvolt = <2850000>;
-					regulator-max-microvolt = <2850000>;
-					regulator-always-on;
-				};
-
-				ldo6 {
-					regulator-name = "vdd_ldo6,avdd_vdac";
-					regulator-min-microvolt = <1800000>;
+				ldo6_reg: ldo6 {
+					regulator-name = "vdd_ldo6,avdd_vdac,vcsi,vmic";
+					regulator-min-microvolt = <1250000>;
 					regulator-max-microvolt = <1800000>;
 				};
 
 				hdmi_vdd_reg: ldo7 {
 					regulator-name = "vdd_ldo7,avdd_hdmi,vdd_fuse";
-					regulator-min-microvolt = <3300000>;
+					regulator-min-microvolt = <1250000>;
 					regulator-max-microvolt = <3300000>;
 				};
 
 				hdmi_pll_reg: ldo8 {
 					regulator-name = "vdd_ldo8,avdd_hdmi_pll";
-					regulator-min-microvolt = <1800000>;
-					regulator-max-microvolt = <1800000>;
+					regulator-min-microvolt = <1250000>;
+					regulator-max-microvolt = <3300000>;
 				};
 
-				ldo9 {
-					regulator-name = "vdd_ldo9,avdd_2v85,vdd_ddr_rx";
-					regulator-min-microvolt = <2850000>;
-					regulator-max-microvolt = <2850000>;
-					regulator-always-on;
+				ldo9_reg: ldo9 {
+					regulator-name = "vdd_ldo9,avdd_2v85,vdd_ddr_rx,avdd_amp";
+					regulator-min-microvolt = <1250000>;
+					regulator-max-microvolt = <3300000>;
 				};
 
-				ldo_rtc {
+				ldortc_reg: ldo_rtc {
 					regulator-name = "vdd_rtc_out,vdd_cell";
 					regulator-min-microvolt = <3300000>;
 					regulator-max-microvolt = <3300000>;
@@ -664,6 +645,26 @@
 
 		backlight = <&backlight>;
 		ddc-i2c-bus = <&lvds_ddc>;
+		display-timings {
+			native-mode = <&timing0>;
+			timing0: 1280x800 {
+				/* PHJ00 has 10.1 inch, 1280x800, 16:10 */
+				/* LG LP101WX1 */
+				/* datasheet - https://datasheetspdf.com/pdf-file/788219/LG/LP101WX1-SLN2/1 */
+				/* taken from thinktabletopensource/kernel/arch/arm/mach-tegra/board-ventana-panel.c */
+				/* LG_panel_modes */
+				clock-frequency = <71500000>; // 72072000
+				hactive = <1280>;
+				vactive = <800>;
+				hsync-len = <16 32 48>;
+				hfront-porch = <16 48 62>;
+				hback-porch = <54 80 98>;
+				vfront-porch = <1 2 3>;		
+				vback-porch = <7 15 35>;
+				vsync-len = <3 6 9>;
+				hsync-active = <1>;
+			};
+		};
 	};
 	
 	/* TPS6586x, TPS658621 */
