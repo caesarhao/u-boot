@@ -347,7 +347,7 @@
 		status = "okay";
 	};
 
-	i2c@7000c000 {
+	tegra_i2c: i2c@7000c000 {
 		status = "okay";
 		clock-frequency = <400000>;
 
@@ -360,23 +360,40 @@
 			gpio-controller;
 			#gpio-cells = <2>;
 
-			micdet-cfg = <0>;
+			micdet-cfg = <0x83>;
 			micdet-delay = <100>;
-			gpio-cfg = <0xffffffff 0xffffffff 0 0xffffffff 0xffffffff>;
+			// gpio-cfg from tpt opensource code
+			gpio-cfg = <
+				0x00008000 /* DMIC_LR, output */ 
+				0x00008000 /* DMIC_DAT, input */ 
+				0x00000000 /* GPIO, output, low */ 
+				0x00000400 /* Interrupt, output */ 
+				0x00008000 /* BCLK, input, active high */
+			>;
 		};
 
-		/* ALS and proximity sensor */
-		isl29018@44 {
+		/* AL3000A, ambient light sensor */
+		al3000a: als@1c {
+			// TODO : check compatible information 
 			compatible = "isil,isl29018";
-			reg = <0x44>;
+			reg = <0x1C>;
 			interrupt-parent = <&gpio>;
 			interrupts = <TEGRA_GPIO(Z, 2) IRQ_TYPE_LEVEL_HIGH>;
 		};
 	};
 
-	i2c@7000c400 {
+	tegra_i2c2: i2c@7000c400 {
 		status = "okay";
 		clock-frequency = <100000>;
+		ene_kb930: embedded-controller@58 {
+			// TODO : check compatible information 
+			compatible = "ene,kb930";
+			reg = <0x58>;
+			interrupt-parent = <&gpio>;
+			interrupts = <TEGRA_GPIO(V, 3) IRQ_TYPE_LEVEL_HIGH>;
+			system-power-controller;
+			// monitored-battery = <&battery>;
+		};
 	};
 
 	i2cmux {
@@ -404,12 +421,12 @@
 		};
 	};
 
-	i2c@7000c500 {
+	tegra_i2c3: i2c@7000c500 {
 		status = "okay";
 		clock-frequency = <400000>;
 	};
 
-	i2c@7000d000 {
+	tegra_i2c4: i2c@7000d000 {
 		status = "okay";
 		clock-frequency = <400000>;
 
@@ -532,10 +549,34 @@
 				};
 			};
 		};
-
+		// ECompass, AK8975, I2C, address 0x0C
+		// Analog Power VDD, range  <2.4 3.0 3.6> V, 3V on PCB
+		// Digital Power VIN, range  <1.65 VDD>V, 1.8V on PCB	
+		// DRDY pin, Active High, to indicate data is ready to read
+		magnet-sensor@c {
+			compatible = "asahi-kasei,ak8975";
+			reg = <0x0c>;
+			//vdd-supply = <&palmas_ldo6_reg>;
+			interrupt-parent = <&gpio>;
+			interrupts = <TEGRA_GPIO(N, 5) IRQ_TYPE_LEVEL_HIGH>;
+		};
+		// ± 2g / 4g / 8g Tri-axis Digital Accelerometer, KXTF9, I2C, address 0x0F
+		// Power VDD, range  <1.8 1.8 3.6> V, 1.8V on PCB	
+		accel-sensor@f {
+			compatible = "kionix,kxtf9";
+			reg = <0x0f>;
+			//vdd-supply = <&palmas_ldo6_reg>;
+			interrupt-parent = <&gpio>;
+			interrupts = <TEGRA_GPIO(N, 4) IRQ_TYPE_LEVEL_LOW>;
+		};	
+		// temperature sensor, NCT1008, address 0x4C
+		// Power VDD, range  <2.8 3.3 3.6> V, 3V on PCB	
 		temperature-sensor@4c {
 			compatible = "onnn,nct1008";
 			reg = <0x4c>;
+			//vdd-supply = <&palmas_ldo6_reg>;
+			interrupt-parent = <&gpio>;
+			interrupts = <TEGRA_GPIO(N, 6) IRQ_TYPE_LEVEL_LOW>;
 		};
 	};
 
